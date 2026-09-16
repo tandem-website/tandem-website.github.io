@@ -1,8 +1,8 @@
 name: Deploy to GitHub Pages
 
+# Dispatched by trigger-pages.yml with GITHUB_TOKEN so the run and the
+# github-pages deployment are attributed to github-actions[bot].
 on:
-  push:
-    branches: [main]
   workflow_dispatch:
 
 permissions:
