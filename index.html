@@ -39,6 +39,7 @@
     <li><a href="#method">Method</a></li>
     <li><a href="#tasks">Tasks</a></li>
     <li><a href="#results">Results</a></li>
+    <li><a href="#rollouts">VLA Rollouts</a></li>
     <li><a href="#effort">Human Effort</a></li>
     <li><a href="#collection">Data Collection</a></li>
     <li><a href="#limitations">Limitations</a></li>
@@ -161,6 +162,41 @@
         <li><b>Pick Bread, Place on Plate, Open Box, Bread in Box</b>Move the bread off the box, open the box, then put the bread inside. The human phase sits between two TAMP phases.<span class="phases"><span class="chip tamp">TAMP</span><span class="chip teleop">Teleop</span><span class="chip tamp">TAMP</span></span></li>
       </ul>
     </div>
+
+    <h3 class="sub" id="collection-videos">TANDEM collecting demonstrations</h3>
+    <p class="sec-sub">One collection episode per task. The label in the top-left corner shows who is executing the current phase: TAMP or a human teleoperator. Videos are sped up; the playback speed is shown in the top-right corner.</p>
+    <div class="vgrid">
+      <figure class="vcard reveal">
+        <video class="autoplay" muted loop playsinline preload="none" poster="static/videos/collect-breads-cover.jpg" aria-label="TANDEM data collection: Pick 3 Breads &amp; Cover">
+          <source src="static/videos/collect-breads-cover.mp4" type="video/mp4" />
+        </video>
+        <figcaption><span class="n">1.</span> Pick 3 Breads &amp; Cover</figcaption>
+      </figure>
+      <figure class="vcard reveal">
+        <video class="autoplay" muted loop playsinline preload="none" poster="static/videos/collect-toy-puzzle.jpg" aria-label="TANDEM data collection: Remove Toy &amp; Solve Puzzle">
+          <source src="static/videos/collect-toy-puzzle.mp4" type="video/mp4" />
+        </video>
+        <figcaption><span class="n">2.</span> Remove Toy &amp; Solve Puzzle</figcaption>
+      </figure>
+      <figure class="vcard reveal">
+        <video class="autoplay" muted loop playsinline preload="none" poster="static/videos/collect-bowls-cover.jpg" aria-label="TANDEM data collection: Bread in Blue Bowl, Banana in Green Bowl, Cover Bread">
+          <source src="static/videos/collect-bowls-cover.mp4" type="video/mp4" />
+        </video>
+        <figcaption><span class="n">3.</span> Bread in Blue Bowl, Banana in Green Bowl, Cover Bread</figcaption>
+      </figure>
+      <figure class="vcard reveal">
+        <video class="autoplay" muted loop playsinline preload="none" poster="static/videos/collect-pen-book.jpg" aria-label="TANDEM data collection: Remove Pen, Place on Tray, Open Book">
+          <source src="static/videos/collect-pen-book.mp4" type="video/mp4" />
+        </video>
+        <figcaption><span class="n">4.</span> Remove Pen, Place on Tray, Open Book</figcaption>
+      </figure>
+      <figure class="vcard reveal">
+        <video class="autoplay" muted loop playsinline preload="none" poster="static/videos/collect-bread-box.jpg" aria-label="TANDEM data collection: Pick Bread, Place on Plate, Open Box, Bread in Box">
+          <source src="static/videos/collect-bread-box.mp4" type="video/mp4" />
+        </video>
+        <figcaption><span class="n">5.</span> Pick Bread, Place on Plate, Open Box, Bread in Box</figcaption>
+      </figure>
+    </div>
   </div>
 </section>
 
@@ -209,10 +245,53 @@
       <div class="finding"><b>No planner at deployment.</b> HITL-TAMP keeps a slow TAMP planner in its execution pipeline. The TANDEM-trained VLA runs the whole task on its own at 15&nbsp;Hz.</div>
     </div>
 
+    <!-- ---------- rollouts ---------- -->
+    <h3 class="sub" id="rollouts">Fine-tuned VLA rollouts</h3>
+    <p class="sec-sub">&pi;<sub>0.5</sub>-DROID fine-tuned on TANDEM demonstrations, executing each full task on its own with no planner and no human. Videos are sped up.</p>
+    <div class="vgrid">
+      <figure class="vcard reveal">
+        <video class="autoplay" muted loop playsinline preload="none" poster="static/videos/rollout-breads-cover.jpg" aria-label="Fine-tuned VLA rollout: Pick 3 Breads &amp; Cover">
+          <source src="static/videos/rollout-breads-cover.mp4" type="video/mp4" />
+        </video>
+        <figcaption><span class="n">1.</span> Pick 3 Breads &amp; Cover</figcaption>
+      </figure>
+      <figure class="vcard reveal">
+        <video class="autoplay" muted loop playsinline preload="none" poster="static/videos/rollout-toy-puzzle.jpg" aria-label="Fine-tuned VLA rollout: Remove Toy &amp; Solve Puzzle">
+          <source src="static/videos/rollout-toy-puzzle.mp4" type="video/mp4" />
+        </video>
+        <figcaption><span class="n">2.</span> Remove Toy &amp; Solve Puzzle</figcaption>
+      </figure>
+      <figure class="vcard reveal">
+        <video class="autoplay" muted loop playsinline preload="none" poster="static/videos/rollout-bowls-cover.jpg" aria-label="Fine-tuned VLA rollout: Bread in Blue Bowl, Banana in Green Bowl, Cover Bread">
+          <source src="static/videos/rollout-bowls-cover.mp4" type="video/mp4" />
+        </video>
+        <figcaption><span class="n">3.</span> Bread in Blue Bowl, Banana in Green Bowl, Cover Bread</figcaption>
+      </figure>
+      <figure class="vcard reveal">
+        <video class="autoplay" muted loop playsinline preload="none" poster="static/videos/rollout-pen-book.jpg" aria-label="Fine-tuned VLA rollout: Remove Pen, Place on Tray, Open Book">
+          <source src="static/videos/rollout-pen-book.mp4" type="video/mp4" />
+        </video>
+        <figcaption><span class="n">4.</span> Remove Pen, Place on Tray, Open Book</figcaption>
+      </figure>
+      <figure class="vcard reveal">
+        <video class="autoplay" muted loop playsinline preload="none" poster="static/videos/rollout-bread-box.jpg" aria-label="Fine-tuned VLA rollout: Pick Bread, Place on Plate, Open Box, Bread in Box">
+          <source src="static/videos/rollout-bread-box.mp4" type="video/mp4" />
+        </video>
+        <figcaption><span class="n">5.</span> Pick Bread, Place on Plate, Open Box, Bread in Box</figcaption>
+      </figure>
+    </div>
+
     <!-- ---------- human effort ---------- -->
     <h3 class="sub" id="effort">Human time goes further with TANDEM</h3>
-    <p class="sec-sub">On Pick 3 Breads &amp; Cover, both methods get the same human operator time. The human teleoperates only the covering stage in TANDEM, but every stage in full teleoperation, so the same budget buys about 2.9&times; as many demonstrations.</p>
-    <div class="chart-card reveal">
+    <p class="sec-sub">On Pick 3 Breads &amp; Cover, both methods get the same human operator time. The human teleoperates only the covering stage in TANDEM.</p>
+    <figure class="fig reveal vfig">
+      <video class="autoplay" muted loop playsinline preload="none" poster="static/videos/human-time-comparison.jpg" aria-label="Side-by-side collection of Pick 3 Breads &amp; Cover by full teleoperation and by TANDEM, with running human-time counters">
+        <source src="static/videos/human-time-comparison.mp4" type="video/mp4" />
+      </video>
+      <figcaption><b>Human time, side by side.</b> Full teleoperation (left) and TANDEM (right) each collect Pick 3 Breads &amp; Cover demonstrations. The counters show accumulated human time. With TANDEM the operator is needed only for covering, so their clock runs far more slowly.</figcaption>
+    </figure>
+
+    <div class="chart-card reveal" style="margin-top:22px">
       <div class="chart-head">
         <div class="chart-title">Matched human-time budgets</div>
         <div class="seg" role="group" aria-label="Metric" data-for="scale">

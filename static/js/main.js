@@ -294,6 +294,25 @@
     reveals.forEach(function (r) { r.classList.add('in'); });
   }
 
+  // ---------- videos: play only while on screen ----------
+  var videos = document.querySelectorAll('video.autoplay');
+  var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reduceMotion || !('IntersectionObserver' in window)) {
+    videos.forEach(function (vid) { vid.controls = true; });
+  } else {
+    var vio = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) {
+          var p = e.target.play();
+          if (p && p.catch) p.catch(function () { e.target.controls = true; });
+        } else {
+          e.target.pause();
+        }
+      });
+    }, { threshold: 0.25 });
+    videos.forEach(function (vid) { vio.observe(vid); });
+  }
+
   // ---------- TOC scroll-spy ----------
   var links = Array.prototype.slice.call(document.querySelectorAll('.toc-list a'));
   var targets = links.map(function (a) { return document.querySelector(a.getAttribute('href')); });

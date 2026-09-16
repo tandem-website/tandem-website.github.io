@@ -273,3 +273,13 @@ footer a { color: var(--muted); }
   h2.sec { font-size: 25px; }
   .stat .num { font-size: 32px; }
 }
+
+/* ---------- videos ---------- */
+.vgrid { display: flex; flex-wrap: wrap; justify-content: center; gap: 18px; }
+.vcard { flex: 0 1 calc((100% - 36px) / 3); background: var(--card); border: 1px solid var(--line); border-radius: 12px; box-shadow: var(--shadow); overflow: hidden; }
+.vcard video, .vfig video { width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: cover; background: var(--bg-alt); }
+.vcard figcaption { padding: 9px 12px 10px; font-size: 13.5px; font-weight: 600; color: var(--ink-2); line-height: 1.35; }
+.vcard figcaption .n { color: var(--muted); }
+.vfig video { aspect-ratio: 962 / 270; border-radius: 8px; }
+@media (max-width: 860px) { .vcard { flex-basis: calc((100% - 18px) / 2); } }
+@media (max-width: 560px) { .vcard { flex-basis: 100%; } }
