@@ -1,2 +1,5 @@
 # Keep the paper out of the public repo while under review
 *.pdf
+
+# but the appendix is public
+!static/pdfs/tandem-appendix.pdf
