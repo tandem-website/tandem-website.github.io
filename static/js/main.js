@@ -26,13 +26,13 @@
   function avg(a) { return Math.round(a.reduce(function (s, x) { return s + x; }, 0) / a.length * 10) / 10; }
   function withAvg(a) { return a.concat([avg(a)]); }
 
-  // Table II
+  // Fig. 6: downstream policy performance, 20 evaluation trials per task
   var MAIN = {
-    sr:   { pre: withAvg([0, 0, 0, 0, 0]),       hitl: withAvg([30, 0, 15, 30, 10]),  ours: withAvg([45, 50, 75, 50, 80]) },
-    prog: { pre: withAvg([30, 30, 32, 52, 33]),  hitl: withAvg([69, 30, 68, 70, 40]), ours: withAvg([68, 66, 87, 77, 93]) }
+    sr:   { pre: withAvg([0, 0, 0, 0, 0]),                 hitl: withAvg([30, 0, 15, 30, 10]),            ours: withAvg([45, 50, 75, 50, 80]) },
+    prog: { pre: withAvg([41.3, 30, 31.7, 38.3, 33.3]),    hitl: withAvg([68.8, 30, 68.3, 71.7, 40]),     ours: withAvg([67.5, 65, 85, 76.7, 93.3]) }
   };
 
-  // Table III: Pick 3 Breads & Cover at matched human time
+  // Fig. 5: Pick 3 Breads & Cover at matched human time
   var SCALE_CATS = ['262 s', '524 s', '785 s', '1047 s'];
   var SCALE = {
     ep:   { ours: [20, 40, 60, 80], human: [7, 14, 21, 28] },
@@ -45,7 +45,7 @@
     prog: 'Task progress of the same checkpoints. Teleoperation is higher at 262 s and 1047 s; TANDEM is higher at 524 s and 785 s.'
   };
 
-  // Table I: failure attribution
+  // Table I + Fig. 4: collection attempts and failure attribution
   var FAIL_SERIES = {
     success:  { label: 'Success',              color: v('--s-ours') },
     invent:   { label: 'Invention / switch',   color: v('--s-pre') },
@@ -55,11 +55,11 @@
   };
   var FAIL_KEYS = ['success', 'invent', 'planning', 'exec', 'human'];
   var FAIL = [
-    { success: 20, invent: 0, planning: 1,  exec: 27, human: 0 },
-    { success: 20, invent: 4, planning: 3,  exec: 32, human: 3 },
-    { success: 20, invent: 0, planning: 0,  exec: 12, human: 0 },
-    { success: 20, invent: 0, planning: 4,  exec: 17, human: 0 },
-    { success: 20, invent: 0, planning: 16, exec: 32, human: 2 }
+    { success: 20, invent: 0, planning: 0, exec: 11, human: 0 },
+    { success: 20, invent: 0, planning: 0, exec: 3,  human: 0 },
+    { success: 20, invent: 0, planning: 0, exec: 2,  human: 0 },
+    { success: 20, invent: 0, planning: 0, exec: 5,  human: 0 },
+    { success: 20, invent: 2, planning: 0, exec: 7,  human: 0 }
   ];
 
   function el(tag, attrs, parent) {
@@ -181,7 +181,7 @@
   // ---------- stacked horizontal bars: collection attempts by outcome ----------
   function failureChart(container) {
     var tip = tooltip(container);
-    var maxAttempts = 70;
+    var maxAttempts = 35;
 
     FAIL.forEach(function (row, i) {
       var attempts = FAIL_KEYS.reduce(function (s, k) { return s + row[k]; }, 0);
@@ -227,7 +227,7 @@
 
     var ax = document.createElement('div');
     ax.className = 'faxis';
-    ax.innerHTML = '<div></div><div class="ticks">' + [0, 10, 20, 30, 40, 50, 60, 70].map(function (t) {
+    ax.innerHTML = '<div></div><div class="ticks">' + [0, 5, 10, 15, 20, 25, 30, 35].map(function (t) {
       return '<span style="left:' + (t / maxAttempts * 100) + '%">' + t + '</span>';
     }).join('') + '</div>';
     container.appendChild(ax);
