@@ -1,4 +1,4 @@
-/* TANDEM project page: charts, scroll-spy, reveal, copy. No dependencies. */
+/* TANDEM project page: charts, scroll-spy, copy. No dependencies. */
 (function () {
   'use strict';
 
@@ -15,43 +15,46 @@
   };
 
   var TASKS = [
-    'Pick 3 Breads & Cover',
-    'Remove Toy & Solve Puzzle',
-    'Bread in Blue Bowl, Banana in Green Bowl, Cover Bread',
-    'Remove Pen, Place on Tray, Open Book',
-    'Pick Bread, Place on Plate, Open Box, Bread in Box'
+    'Cover Bread Rolls',
+    'Solve Constrained Puzzle',
+    'Sort & Cover Snacks',
+    'Open Obstructed Book',
+    'Store Bread in Closed Box'
   ];
-  var MAIN_CATS = ['Breads & Cover', 'Toy & Puzzle', 'Bowls & Cover', 'Pen, Tray & Book', 'Bread in Box', 'Average'];
+  var MAIN_CATS = TASKS.concat(['Average']);
+  // axis labels: two lines when there is room, one short word otherwise
+  var MAIN_LINES = [['Cover Bread', 'Rolls'], ['Solve Constrained', 'Puzzle'], ['Sort & Cover', 'Snacks'], ['Open Obstructed', 'Book'], ['Store Bread in', 'Closed Box'], ['Average']];
+  var MAIN_SHORT = [['Bread', 'Rolls'], ['Puzzle'], ['Snacks'], ['Book'], ['Box'], ['Avg.']];
 
   function avg(a) { return Math.round(a.reduce(function (s, x) { return s + x; }, 0) / a.length * 10) / 10; }
   function withAvg(a) { return a.concat([avg(a)]); }
 
   // Fig. 6: downstream policy performance, 20 evaluation trials per task
   var MAIN = {
-    sr:   { pre: withAvg([0, 0, 0, 0, 0]),                 hitl: withAvg([30, 0, 15, 30, 10]),            ours: withAvg([45, 50, 75, 50, 80]) },
-    prog: { pre: withAvg([41.3, 30, 31.7, 38.3, 33.3]),    hitl: withAvg([68.8, 30, 68.3, 71.7, 40]),     ours: withAvg([67.5, 65, 85, 76.7, 93.3]) }
+    sr:   { pre: withAvg([0, 0, 0, 0, 0]),              hitl: withAvg([30, 0, 15, 30, 10]),        ours: withAvg([45, 50, 75, 50, 80]) },
+    prog: { pre: withAvg([41.3, 30, 31.7, 38.3, 33.3]), hitl: withAvg([68.8, 30, 68.3, 71.7, 40]), ours: withAvg([67.5, 65, 85, 76.7, 93.3]) }
   };
 
-  // Fig. 5: Pick 3 Breads & Cover at matched human time
-  var SCALE_CATS = ['262 s', '524 s', '785 s', '1047 s'];
+  // Fig. 5: Cover Bread Rolls at matched human-effort budgets (seconds)
+  var SCALE_X = [262, 524, 785, 1047];
   var SCALE = {
     ep:   { ours: [20, 40, 60, 80], human: [7, 14, 21, 28] },
     sr:   { ours: [45, 75, 80, 75], human: [30, 30, 50, 65] },
     prog: { ours: [68, 90, 94, 85], human: [71, 63, 75, 91] }
   };
   var SCALE_NOTES = {
-    ep: 'Successful demonstrations collected for each human-time budget. TANDEM collects about 2.9× as many at every budget.',
-    sr: 'Success of π0.5-DROID fine-tuned on the demonstrations collected for each budget. TANDEM is higher at every budget.',
-    prog: 'Task progress of the same checkpoints. Teleoperation is higher at 262 s and 1047 s; TANDEM is higher at 524 s and 785 s.'
+    ep: 'TANDEM collects approximately 2.9× more demonstrations than full-task teleoperation at matched human-time budgets. For example, with 524 s of human intervention, TANDEM collects 40 demonstrations compared with 14 for oracle teleoperation; with 785 s, it collects 60 compared with 21.',
+    sr: 'Success of π0.5-DROID fine-tuned on the demonstrations collected at each budget. TANDEM achieves 45%, 75%, 80%, and 75% success across the four human-effort budgets, compared with 30%, 30%, 50%, and 65% for Human teleop (oracle).',
+    prog: 'Task progress of the same fine-tuned policies. Teleoperation is higher at 262 s and 1047 s; TANDEM is higher at 524 s and 785 s.'
   };
 
-  // Table I + Fig. 4: collection attempts and failure attribution
+  // Table I + Table III: collection attempts and failure attribution
   var FAIL_SERIES = {
-    success:  { label: 'Success',              color: v('--s-ours') },
-    invent:   { label: 'Invention / switch',   color: v('--s-pre') },
-    planning: { label: 'TAMP planning',        color: '#eda100' },
-    exec:     { label: 'TAMP execution',       color: v('--s-hitl') },
-    human:    { label: 'Human operator',       color: v('--s-human') }
+    success:  { label: 'Success',                     color: v('--s-ours') },
+    invent:   { label: 'Invention / phase switching', color: '#a2748f' },
+    planning: { label: 'TAMP planning',               color: '#7e9b6f' },
+    exec:     { label: 'TAMP execution',              color: '#b58b2a' },
+    human:    { label: 'Human operator',              color: '#6f7a85' }
   };
   var FAIL_KEYS = ['success', 'invent', 'planning', 'exec', 'human'];
   var FAIL = [
@@ -92,12 +95,10 @@
     };
   }
 
-  // Vertical bar path with 4px rounded data-end, square at the baseline.
+  // Plain rectangle, flush to the baseline.
   function barPath(x, y, w, h) {
     if (h <= 0) return '';
-    var r = Math.min(4, w / 2, h);
-    return 'M' + x + ',' + (y + h) + 'V' + (y + r) + 'Q' + x + ',' + y + ' ' + (x + r) + ',' + y +
-      'H' + (x + w - r) + 'Q' + (x + w) + ',' + y + ' ' + (x + w) + ',' + (y + r) + 'V' + (y + h) + 'Z';
+    return 'M' + x + ',' + (y + h) + 'V' + y + 'H' + (x + w) + 'V' + (y + h) + 'Z';
   }
 
   // ---------- grouped bar chart ----------
@@ -108,24 +109,24 @@
     function draw() {
       if (svg) svg.remove();
       var W = Math.max(container.clientWidth, 280);
-      var narrow = W < 600;
-      var H = opts.height || (narrow ? 290 : 320);
-      var m = { t: 22, r: 8, b: narrow ? 50 : 34, l: 34 };
+      var narrow = W < 560;
+      var H = opts.height || (narrow ? 280 : 320);
+      var m = { t: 22, r: 8, b: 44, l: 34 };
       var iw = W - m.l - m.r, ih = H - m.t - m.b;
       var cats = opts.cats, keys = opts.keys, data = opts.data();
-      var axis = opts.axis ? opts.axis() : PERCENT_AXIS;
       var gw = iw / cats.length;
       var pad = Math.max(narrow ? 5 : 10, gw * (narrow ? 0.1 : 0.18));
       var gap = 2;
       var bw = Math.max(4, (gw - 2 * pad - gap * (keys.length - 1)) / keys.length);
-      var y = function (val) { return m.t + ih - (val / axis.max) * ih; };
+      var y = function (val) { return m.t + ih - (val / 100) * ih; };
+      var lines = gw < 115 ? opts.shortLines : opts.lines;
 
       svg = el('svg', { viewBox: '0 0 ' + W + ' ' + H, width: W, height: H, role: 'img', 'aria-label': opts.aria });
       container.insertBefore(svg, container.firstChild);
 
-      axis.ticks.forEach(function (tk) {
+      PERCENT_AXIS.ticks.forEach(function (tk) {
         el('line', { x1: m.l, x2: W - m.r, y1: y(tk), y2: y(tk), class: tk === 0 ? 'baseline' : 'gridline' }, svg);
-        el('text', { x: m.l - 6, y: y(tk) + 4, 'text-anchor': 'end', class: 'tick' }, svg).textContent = axis.fmt(tk);
+        el('text', { x: m.l - 6, y: y(tk) + 4, 'text-anchor': 'end', class: 'tick' }, svg).textContent = tk + '%';
       });
 
       var bars = [];
@@ -139,17 +140,11 @@
           var bx = gx + pad + ki * (bw + gap);
           var p = el('path', { d: barPath(bx, y(val), bw, m.t + ih - y(val)), fill: opts.series[k].color, class: 'bar' }, svg);
           bars.push({ p: p, ci: ci });
-          if (opts.labelKeys && opts.labelKeys.indexOf(k) >= 0 && (!narrow || bw >= 26)) {
-            el('text', { x: bx + bw / 2, y: y(val) - 5, 'text-anchor': 'middle', class: 'val' }, svg).textContent = axis.fmt(val);
+          if (opts.labelKeys && opts.labelKeys.indexOf(k) >= 0 && bw >= 22) {
+            el('text', { x: bx + bw / 2, y: y(val) - 5, 'text-anchor': 'middle', class: 'val' }, svg).textContent = pct(val);
           }
         });
-        var words = narrow ? c.split(' ') : [c];
-        // join short trailing tokens like "&" onto the previous line
-        if (narrow) words = words.reduce(function (acc, w) {
-          if (acc.length && (acc[acc.length - 1].length + w.length < 9)) acc[acc.length - 1] += ' ' + w; else acc.push(w);
-          return acc;
-        }, []);
-        words.forEach(function (w, wi) {
+        lines[ci].forEach(function (w, wi) {
           el('text', { x: gx + gw / 2, y: m.t + ih + 18 + wi * 14, 'text-anchor': 'middle', class: 'cat', style: narrow ? 'font-size:11px' : '' }, svg).textContent = w;
         });
 
@@ -158,9 +153,9 @@
         function over() {
           container.classList.add('dim');
           bars.forEach(function (b) { b.p.classList.toggle('on', b.ci === ci); });
-          var title = opts.tipTitle ? opts.tipTitle(ci) : c;
+          var title = ci < TASKS.length ? c : 'Average over five tasks';
           var html = '<div class="t">' + title + '</div>' + keys.map(function (k) {
-            return '<div class="r"><span><i style="background:' + opts.series[k].color + '"></i>' + opts.series[k].label + '</span><span>' + axis.fmt(data[k][ci]) + '</span></div>';
+            return '<div class="r"><span><i style="background:' + opts.series[k].color + '"></i>' + opts.series[k].label + '</span><span>' + pct(data[k][ci]) + '</span></div>';
           }).join('');
           var topVal = Math.max.apply(null, keys.map(function (k) { return data[k][ci]; }));
           var tx = Math.min(Math.max(gx + gw / 2, 110), W - 110);
@@ -172,6 +167,75 @@
         hit.addEventListener('touchstart', over, { passive: true });
       });
       svg.addEventListener('mouseleave', function () { container.classList.remove('dim'); tip.hide(); });
+    }
+
+    draw();
+    return { draw: draw };
+  }
+
+  // ---------- line chart with crosshair: TANDEM vs. teleop at matched human time ----------
+  function scaleChart(container, metric) {
+    var tip = tooltip(container);
+    var svg = null;
+    var keys = ['ours', 'human'];
+
+    function draw() {
+      if (svg) svg.remove();
+      var m0 = metric();
+      var data = SCALE[m0];
+      var axis = m0 === 'ep' ? { max: 80, ticks: [0, 20, 40, 60, 80], fmt: String } : PERCENT_AXIS;
+      var W = Math.max(container.clientWidth, 260);
+      var H = 290;
+      var m = { t: 22, r: 16, b: 40, l: 38 };
+      var iw = W - m.l - m.r, ih = H - m.t - m.b;
+      var inset = Math.min(40, iw * 0.07);
+      var x = function (s) { return m.l + inset + (s - SCALE_X[0]) / (SCALE_X[SCALE_X.length - 1] - SCALE_X[0]) * (iw - 2 * inset); };
+      var y = function (val) { return m.t + ih - (val / axis.max) * ih; };
+      svg = el('svg', { viewBox: '0 0 ' + W + ' ' + H, width: W, height: H, role: 'img', 'aria-label': 'TANDEM vs. human teleoperation at matched human-effort budgets on Cover Bread Rolls' });
+      container.insertBefore(svg, container.firstChild);
+
+      axis.ticks.forEach(function (tk) {
+        el('line', { x1: m.l, x2: W - m.r, y1: y(tk), y2: y(tk), class: tk === 0 ? 'baseline' : 'gridline' }, svg);
+        el('text', { x: m.l - 6, y: y(tk) + 4, 'text-anchor': 'end', class: 'tick' }, svg).textContent = axis.fmt(tk);
+      });
+      SCALE_X.forEach(function (s) {
+        el('text', { x: x(s), y: m.t + ih + 18, 'text-anchor': 'middle', class: 'tick' }, svg).textContent = s + ' s';
+      });
+      el('text', { x: m.l + iw / 2, y: H - 4, 'text-anchor': 'middle', class: 'tick' }, svg).textContent = 'Human effort time';
+
+      var cross = el('line', { y1: m.t, y2: m.t + ih, stroke: v('--axis'), 'stroke-width': 1, opacity: 0 }, svg);
+
+      keys.forEach(function (k) {
+        var d = SCALE_X.map(function (s, i) { return (i ? 'L' : 'M') + x(s) + ',' + y(data[k][i]); }).join('');
+        el('path', { d: d, fill: 'none', stroke: SERIES[k].color, 'stroke-width': 2, 'stroke-linejoin': 'round', 'stroke-linecap': 'round' }, svg);
+      });
+      // Value labels: the higher series above its point, the lower one below.
+      SCALE_X.forEach(function (s, i) {
+        keys.forEach(function (k) {
+          var other = data[k === 'ours' ? 'human' : 'ours'][i];
+          var above = data[k][i] > other || (data[k][i] === other && k === 'ours');
+          el('circle', { cx: x(s), cy: y(data[k][i]), r: 4, fill: SERIES[k].color, stroke: '#fff', 'stroke-width': 2 }, svg);
+          el('text', { x: x(s), y: y(data[k][i]) + (above ? -9 : 17), 'text-anchor': 'middle', class: 'val' }, svg).textContent = axis.fmt(data[k][i]);
+        });
+      });
+
+      var hit = el('rect', { x: m.l, y: m.t, width: iw, height: ih, class: 'hit' }, svg);
+      function move(clientX) {
+        var r = svg.getBoundingClientRect();
+        var px = (clientX - r.left) * (W / r.width);
+        var best = 0;
+        SCALE_X.forEach(function (s, i) { if (Math.abs(x(s) - px) < Math.abs(x(SCALE_X[best]) - px)) best = i; });
+        var cx = x(SCALE_X[best]);
+        cross.setAttribute('x1', cx); cross.setAttribute('x2', cx); cross.setAttribute('opacity', 1);
+        var html = '<div class="t">' + SCALE_X[best] + ' s of human effort</div>' + keys.map(function (k) {
+          return '<div class="r"><span><i style="background:' + SERIES[k].color + '"></i>' + SERIES[k].label + '</span><span>' + axis.fmt(data[k][best]) + '</span></div>';
+        }).join('');
+        var top = Math.max(data.ours[best], data.human[best]);
+        tip.show(Math.min(Math.max(cx, 110), W - 110), y(top) - 18, html);
+      }
+      hit.addEventListener('mousemove', function (e) { move(e.clientX); });
+      hit.addEventListener('touchstart', function (e) { move(e.touches[0].clientX); }, { passive: true });
+      hit.addEventListener('mouseleave', function () { cross.setAttribute('opacity', 0); tip.hide(); });
     }
 
     draw();
@@ -199,7 +263,7 @@
         s.className = 'fseg';
         s.style.flex = row[k] + ' 0 0';
         s.style.background = FAIL_SERIES[k].color;
-        if (row[k] >= 4) s.textContent = row[k];
+        if (row[k] >= 3) s.textContent = row[k];
         track.appendChild(s);
       });
       r.appendChild(label);
@@ -211,12 +275,12 @@
         container.querySelectorAll('.frow').forEach(function (o) { o.classList.toggle('on', o === r); });
         var failures = attempts - row.success;
         var html = '<div class="t">' + TASKS[i] + '</div>' + FAIL_KEYS.map(function (k) {
-          var share = k === 'success' ? '' : ' <span style="opacity:.6;font-weight:500">(' + pct(failures ? row[k] / failures * 100 : 0) + ' of failures)</span>';
+          var share = k === 'success' ? '' : ' <span style="opacity:.6">(' + pct(failures ? row[k] / failures * 100 : 0) + ' of failures)</span>';
           return '<div class="r"><span><i style="background:' + FAIL_SERIES[k].color + '"></i>' + FAIL_SERIES[k].label + '</span><span>' + row[k] + share + '</span></div>';
         }).join('');
         var cb = container.getBoundingClientRect(), tb = track.getBoundingClientRect();
         var clientX = e && e.clientX != null ? e.clientX : (tb.left + tb.width / 2);
-        var x = Math.min(Math.max(clientX - cb.left, 150), cb.width - 150);
+        var x = Math.min(Math.max(clientX - cb.left, 160), cb.width - 160);
         tip.show(x, tb.top - cb.top - 2, html);
       }
       function out() { container.classList.remove('dim'); tip.hide(); }
@@ -240,26 +304,17 @@
   var mainKeys = ['pre', 'hitl', 'ours'];
   legend('legend-main', mainKeys, SERIES);
   charts.main = groupedBars(document.getElementById('chart-main'), {
-    cats: MAIN_CATS, keys: mainKeys, series: SERIES, labelKeys: ['ours'], avgDivider: true,
-    aria: 'Downstream policy performance by method on five tasks',
-    tipTitle: function (ci) { return ci < TASKS.length ? TASKS[ci] : 'Average over five tasks'; },
+    cats: MAIN_CATS, lines: MAIN_LINES, shortLines: MAIN_SHORT,
+    keys: mainKeys, series: SERIES, labelKeys: ['ours'], avgDivider: true,
+    aria: 'Downstream policy performance by approach on five tasks',
     data: function () { return MAIN[state.main]; }
   });
 
-  var scaleKeys = ['ours', 'human'];
-  legend('legend-scale', scaleKeys, SERIES);
+  legend('legend-scale', ['ours', 'human'], SERIES);
+  // line swatches for the line chart
+  document.querySelectorAll('#legend-scale i').forEach(function (sw) { sw.style.height = '3px'; sw.style.width = '16px'; });
   var noteScale = document.getElementById('note-scale');
-  charts.scale = groupedBars(document.getElementById('chart-scale'), {
-    cats: SCALE_CATS, keys: scaleKeys, series: SERIES, labelKeys: scaleKeys, height: 290,
-    aria: 'TANDEM vs. human teleoperation at matched human-time budgets',
-    tipTitle: function (ci) { return SCALE_CATS[ci] + ' of human time'; },
-    axis: function () {
-      return state.scale === 'ep'
-        ? { max: 80, ticks: [0, 20, 40, 60, 80], fmt: function (x) { return String(x); } }
-        : PERCENT_AXIS;
-    },
-    data: function () { return SCALE[state.scale]; }
-  });
+  charts.scale = scaleChart(document.getElementById('chart-scale'), function () { return state.scale; });
   noteScale.textContent = SCALE_NOTES[state.scale];
 
   legend('legend-fail', FAIL_KEYS, FAIL_SERIES);
@@ -283,34 +338,24 @@
     rt = setTimeout(function () { charts.main.draw(); charts.scale.draw(); }, 120);
   });
 
-  // ---------- reveal on scroll ----------
-  var reveals = document.querySelectorAll('.reveal');
-  if ('IntersectionObserver' in window) {
-    var io = new IntersectionObserver(function (entries) {
-      entries.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
-    }, { threshold: 0.12 });
-    reveals.forEach(function (r) { io.observe(r); });
-  } else {
-    reveals.forEach(function (r) { r.classList.add('in'); });
-  }
-
-  // ---------- videos: play only while on screen ----------
-  var videos = document.querySelectorAll('video.autoplay');
+  // ---------- videos: play only while near the viewport ----------
+  var vids = document.querySelectorAll('video[data-autoplay]');
   var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   if (reduceMotion || !('IntersectionObserver' in window)) {
-    videos.forEach(function (vid) { vid.controls = true; });
+    vids.forEach(function (vd) { vd.controls = true; vd.preload = 'metadata'; });
   } else {
     var vio = new IntersectionObserver(function (entries) {
       entries.forEach(function (e) {
+        var vd = e.target;
         if (e.isIntersecting) {
-          var p = e.target.play();
-          if (p && p.catch) p.catch(function () { e.target.controls = true; });
+          var p = vd.play();
+          if (p && p.catch) p.catch(function () { vd.controls = true; });
         } else {
-          e.target.pause();
+          vd.pause();
         }
       });
-    }, { threshold: 0.25 });
-    videos.forEach(function (vid) { vio.observe(vid); });
+    }, { rootMargin: '200px 0px' });
+    vids.forEach(function (vd) { vio.observe(vd); });
   }
 
   // ---------- TOC scroll-spy ----------

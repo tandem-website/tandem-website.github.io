@@ -2,7 +2,7 @@
 
 Anonymous project page for *TANDEM: Task and Motion Planning with As-Needed Demonstrations for Efficient Vision-Language-Action Model Fine-tuning*.
 
-Static site: `index.html` + `static/`. There is no build step and no dependencies. Figures in `static/images/` are cropped from `tandem.pdf` (Figs. 1–3).
+Static site: `index.html` + `static/`. There is no build step and no dependencies. Figures in `static/images/` are cropped from the paper PDF (Figs. 1–3).
 
 ## Local preview
 
