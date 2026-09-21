@@ -39,13 +39,11 @@
   var SCALE_X = [262, 524, 785, 1047];
   var SCALE = {
     ep:   { ours: [20, 40, 60, 80], human: [7, 14, 21, 28] },
-    sr:   { ours: [45, 75, 80, 75], human: [30, 30, 50, 65] },
-    prog: { ours: [68, 90, 94, 85], human: [71, 63, 75, 91] }
+    sr:   { ours: [45, 75, 80, 75], human: [30, 30, 50, 65] }
   };
   var SCALE_NOTES = {
     ep: 'TANDEM collects approximately 2.9× more demonstrations than full-task teleoperation at matched human-time budgets. For example, with 524 s of human intervention, TANDEM collects 40 demonstrations compared with 14 for oracle teleoperation; with 785 s, it collects 60 compared with 21.',
-    sr: 'Success of π0.5-DROID fine-tuned on the demonstrations collected at each budget. TANDEM achieves 45%, 75%, 80%, and 75% success across the four human-effort budgets, compared with 30%, 30%, 50%, and 65% for Human teleop (oracle).',
-    prog: 'Task progress of the same fine-tuned policies. Teleoperation is higher at 262 s and 1047 s; TANDEM is higher at 524 s and 785 s.'
+    sr: 'Success of π0.5-DROID fine-tuned on the demonstrations collected at each budget. TANDEM achieves 45%, 75%, 80%, and 75% success across the four human-effort budgets, compared with 30%, 30%, 50%, and 65% for Human teleop (oracle).'
   };
 
   // Table I + Table III: collection attempts and failure attribution
@@ -111,7 +109,7 @@
       var W = Math.max(container.clientWidth, 280);
       var narrow = W < 560;
       var H = opts.height || (narrow ? 280 : 320);
-      var m = { t: 22, r: 8, b: 44, l: 34 };
+      var m = { t: 22, r: 1, b: 44, l: 34 };
       var iw = W - m.l - m.r, ih = H - m.t - m.b;
       var cats = opts.cats, keys = opts.keys, data = opts.data();
       var gw = iw / cats.length;
@@ -186,7 +184,7 @@
       var axis = m0 === 'ep' ? { max: 80, ticks: [0, 20, 40, 60, 80], fmt: String } : PERCENT_AXIS;
       var W = Math.max(container.clientWidth, 260);
       var H = 290;
-      var m = { t: 22, r: 16, b: 40, l: 38 };
+      var m = { t: 22, r: 1, b: 40, l: 38 };
       var iw = W - m.l - m.r, ih = H - m.t - m.b;
       var inset = Math.min(40, iw * 0.07);
       var x = function (s) { return m.l + inset + (s - SCALE_X[0]) / (SCALE_X[SCALE_X.length - 1] - SCALE_X[0]) * (iw - 2 * inset); };

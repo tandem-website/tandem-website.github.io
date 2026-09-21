@@ -88,7 +88,7 @@
     </div>
 
     <figure class="fig spaced">
-      <img src="static/images/teaser.jpg" width="1800" height="508" loading="lazy" alt="Goal: place the bread rolls on the plate and cover them. TAMP can pick and place but cannot cover, with no human effort; teleoperation executes every stage with huge human effort; TANDEM uses TAMP for pick and place and a human only for covering, with low human effort. The collected dataset supervises π0.5 fine-tuning, and an illustrative plot shows policy success rate against human time for TANDEM, teleop, and TAMP." />
+      <img src="static/images/teaser.jpg" width="1800" height="498" loading="lazy" alt="Goal: place the bread rolls on the plate and cover them. TAMP can pick and place but cannot cover, with no human effort; teleoperation executes every stage with huge human effort; TANDEM uses TAMP for pick and place and a human only for covering, with low human effort. The collected dataset supervises π0.5 fine-tuning, and an illustrative plot shows policy success rate against human time for TANDEM, teleop, and TAMP." />
       <figcaption><b>TANDEM</b> combines autonomous task and motion planning (TAMP) with selective human teleoperation to collect demonstrations for vision-language-action (VLA) fine-tuning. TAMP executes pick-and-place behaviors, and humans handle behaviors beyond the planner's capabilities. This reduces human effort per demonstration. The plot (illustrative) shows how more demonstrations can improve policy performance at a fixed human-time budget.</figcaption>
     </figure>
   </div>
@@ -101,7 +101,7 @@
     <p class="sec-sub">Given a language instruction and an initial observation, TANDEM uses a VLM to extend its base TAMP domain. When the base controllers cannot achieve a desired state, the VLM jointly generates magic operators and any new predicates needed to express their preconditions and effects. The extended domain supports task planning with both autonomous and human execution.</p>
 
     <figure class="fig">
-      <img src="static/images/overview.jpg" width="1800" height="866" loading="lazy" alt="TANDEM overview for “Place the bread inside the box”: (1) task and initial observation; (2) the existing TAMP domain has On, Grasped, Pick and Place, and LiftOpen(box) is detected as a missing capability; (3) a VLM invents the predicate IsOpen(box) and a magic operator LiftOpen(box) executed by a human; (4) the task plan is TAMP Pick(bread), TAMP Place(bread, plate), Human LiftOpen(box), TAMP Pick(bread), TAMP Place(bread, box); (5) execution, where after the human opens the box a VLM verifies IsOpen(box) from a new observation before TAMP resumes." />
+      <img src="static/images/overview.jpg" width="1800" height="859" loading="lazy" alt="TANDEM overview for “Place the bread inside the box”: (1) task and initial observation; (2) the existing TAMP domain has On, Grasped, Pick and Place, and LiftOpen(box) is detected as a missing capability; (3) a VLM invents the predicate IsOpen(box) and a magic operator LiftOpen(box) executed by a human; (4) the task plan is TAMP Pick(bread), TAMP Place(bread, plate), Human LiftOpen(box), TAMP Pick(bread), TAMP Place(bread, box); (5) execution, where after the human opens the box a VLM verifies IsOpen(box) from a new observation before TAMP resumes." />
       <figcaption><b>Overview of TANDEM.</b> Given a language instruction and an initial visual observation, TANDEM uses a VLM to identify task requirements beyond the capabilities of the existing TAMP domain and automatically extends the domain with invented predicates and human-executed magic operators. The resulting task plan interleaves autonomous TAMP phases with human-assisted phases. TAMP executes the supported stages, while the human performs unsupported stages through teleoperation. After each human phase, TANDEM re-perceives the scene and verifies the intended effects before resuming autonomous planning.</figcaption>
     </figure>
 
@@ -235,7 +235,6 @@
         <div class="seg" role="group" aria-label="Metric" data-for="scale">
           <button class="active" data-metric="ep">Demonstrations</button>
           <button data-metric="sr">Success</button>
-          <button data-metric="prog">Task progress</button>
         </div>
       </div>
       <div class="legend" id="legend-scale"></div>
