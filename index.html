@@ -41,7 +41,7 @@
     <li><a href="#results">Results</a></li>
     <li><a href="#rollouts">Policy Rollouts</a></li>
     <li><a href="#effort">Human Effort</a></li>
-    <li><a href="#collection">Domain Extension</a></li>
+    <li><a href="#collection">Collection</a></li>
     <li><a href="#bibtex">BibTeX</a></li>
   </ul>
 </nav>
@@ -71,7 +71,7 @@
 
     <figure class="fig teaser">
       <video data-autoplay muted loop playsinline preload="auto" width="962" height="270" poster="static/videos/human-time-comparison.jpg" aria-label="Side-by-side collection of Cover Bread Rolls by full-task teleoperation and by TANDEM, with running human-time counters"><source src="static/videos/human-time-comparison.mp4" type="video/mp4" /></video>
-      <figcaption>Full-task teleoperation (left) and <b>TANDEM</b> (right) collecting Cover Bread Rolls demonstrations. The counters show accumulated human time. Because TANDEM delegates routine pick-and-place stages to TAMP, the operator only controls the robot during the unsupported covering stage.</figcaption>
+      <figcaption>Full-task teleoperation (left) vs. <b>TANDEM</b> (right). With TANDEM, the human only teleoperates the covering stage.</figcaption>
     </figure>
 
   </div>
@@ -89,7 +89,7 @@
 
     <figure class="fig spaced">
       <img src="static/images/teaser.jpg" width="1800" height="498" loading="lazy" alt="Goal: place the bread rolls on the plate and cover them. TAMP can pick and place but cannot cover, with no human effort; teleoperation executes every stage with huge human effort; TANDEM uses TAMP for pick and place and a human only for covering, with low human effort. The collected dataset supervises π0.5 fine-tuning, and an illustrative plot shows policy success rate against human time for TANDEM, teleop, and TAMP." />
-      <figcaption><b>TANDEM</b> combines autonomous task and motion planning (TAMP) with selective human teleoperation to collect demonstrations for vision-language-action (VLA) fine-tuning. TAMP executes pick-and-place behaviors, and humans handle behaviors beyond the planner's capabilities. This reduces human effort per demonstration. The plot (illustrative) shows how more demonstrations can improve policy performance at a fixed human-time budget.</figcaption>
+      <figcaption>TAMP executes pick-and-place behaviors, and humans handle behaviors beyond the planner&rsquo;s capabilities. The plot is illustrative.</figcaption>
     </figure>
   </div>
 </section>
@@ -98,33 +98,33 @@
 <section id="method">
   <div class="wrap">
     <h2 class="sec">Method</h2>
-    <p class="sec-sub">Given a language instruction and an initial observation, TANDEM uses a VLM to extend its base TAMP domain. When the base controllers cannot achieve a desired state, the VLM jointly generates magic operators and any new predicates needed to express their preconditions and effects. The extended domain supports task planning with both autonomous and human execution.</p>
+    <p class="sec-sub">A VLM extends the TAMP domain with missing predicates and human-executed <i>magic operators</i>, so one plan can interleave autonomous and teleoperated phases.</p>
 
     <figure class="fig">
       <img src="static/images/overview.jpg" width="1800" height="859" loading="lazy" alt="TANDEM overview for “Place the bread inside the box”: (1) task and initial observation; (2) the existing TAMP domain has On, Grasped, Pick and Place, and LiftOpen(box) is detected as a missing capability; (3) a VLM invents the predicate IsOpen(box) and a magic operator LiftOpen(box) executed by a human; (4) the task plan is TAMP Pick(bread), TAMP Place(bread, plate), Human LiftOpen(box), TAMP Pick(bread), TAMP Place(bread, box); (5) execution, where after the human opens the box a VLM verifies IsOpen(box) from a new observation before TAMP resumes." />
-      <figcaption><b>Overview of TANDEM.</b> Given a language instruction and an initial visual observation, TANDEM uses a VLM to identify task requirements beyond the capabilities of the existing TAMP domain and automatically extends the domain with invented predicates and human-executed magic operators. The resulting task plan interleaves autonomous TAMP phases with human-assisted phases. TAMP executes the supported stages, while the human performs unsupported stages through teleoperation. After each human phase, TANDEM re-perceives the scene and verifies the intended effects before resuming autonomous planning.</figcaption>
+      <figcaption><b>Overview of TANDEM.</b> TAMP executes the supported stages and a human teleoperates the rest. After each human phase, TANDEM verifies the intended effect before TAMP resumes.</figcaption>
     </figure>
 
     <div class="pillars">
       <div class="pillar">
         <div class="step">1 &middot; Predicates</div>
         <h4>Predicate Invention</h4>
-        <p>The generated predicates extend the base vocabulary. Each has a name and a natural-language definition with arguments. For example, <span class="pred">IsOpen(x)</span> is defined as <i>&ldquo;x is open&rdquo;</i>. The natural-language definition also specifies what to check during verification: for each predicate, a VLM-based classifier evaluates the instantiated description against the image.</p>
+        <p>A VLM invents predicates the domain is missing, each with a natural-language definition, e.g. <span class="pred">IsOpen(x)</span>: <i>&ldquo;x is open&rdquo;</i>. The definition also lets a VLM check the predicate from an image.</p>
       </div>
       <div class="pillar">
         <div class="step">2 &middot; Operators</div>
         <h4>Magic Operators</h4>
-        <p>The generated magic operators specify transitions executed through human teleoperation. Each has the symbolic structure of an ordinary operator, with a controller that invokes human teleoperation. Its preconditions and effects may use both base and invented predicates. The task planner uses these symbolic transitions to compose a plan. <span class="pred">LiftOpen(box)</span> has the effect <span class="pred">IsOpen(box)</span>, so the planner can open the box before placing the bread inside.</p>
+        <p>Operators executed by a human through teleoperation. They have the same symbolic structure as TAMP operators, e.g. <span class="pred">LiftOpen(box)</span> with effect <span class="pred">IsOpen(box)</span>, so the planner can use them.</p>
       </div>
       <div class="pillar">
         <div class="step">3 &middot; Execution</div>
         <h4>Task Plan Generation and Execution</h4>
-        <p>A VLM plans over the extended domain, specifying the subgoal and executor of each phase. For each robot phase, the underlying TAMP system performs its own task and motion planning. For each human phase, the operator takes control of the robot through the teleoperation interface. After every phase, TANDEM acquires a fresh image. After a human phase, the VLM evaluates the intended effects using the predicate classifiers. If verification fails, TANDEM terminates the trial and excludes its trajectory from the dataset.</p>
+        <p>Robot phases run on TAMP and human phases go to teleoperation. After each human phase, TANDEM re-perceives the scene and verifies the effects before planning resumes.</p>
       </div>
       <div class="pillar">
         <div class="step">4 &middot; Alignment</div>
         <h4>Demonstration Generation</h4>
-        <p>We record the observation&ndash;action trajectories from all phases of a successful trial as one complete demonstration. Planner-generated motions may differ from the teleoperated pretraining data of the target VLA, limiting their usefulness for fine-tuning. To align TAMP-generated motions with human teleoperation, we use example pretraining trajectories to guide autonomous motion generation with DATAFARM. The human-executed portions are already collected through teleoperation and need no separate alignment step.</p>
+        <p>All phases of a successful trial form one complete demonstration. DATAFARM aligns the TAMP segments with the VLA&rsquo;s pretraining data.</p>
       </div>
     </div>
   </div>
@@ -134,25 +134,24 @@
 <section id="tasks">
   <div class="wrap">
     <h2 class="sec">Tasks</h2>
-    <p class="sec-sub">We evaluate TANDEM on five long-horizon manipulation tasks that combine autonomous pick-and-place behaviors with manipulation stages outside the capabilities of the underlying TAMP system (e.g., contact-rich manipulation). Each task therefore requires TANDEM to combine autonomous execution with at least one human-assisted stage.</p>
+    <p class="sec-sub">Five long-horizon tasks, each with at least one stage beyond the TAMP domain.</p>
 
     <div class="two-col">
       <figure class="fig">
         <img src="static/images/tasks.jpg" width="1003" height="992" loading="lazy" alt="Frame sequences for the five tasks: Cover Bread Rolls, Solve Constrained Puzzle, Sort &amp; Cover Snacks, Open Obstructed Book, and Store Bread in Closed Box, with bars marking the segments executed by TAMP (green) and by human teleoperation (blue)." />
-        <figcaption>The task sequences illustrate how TANDEM interleaves autonomous TAMP execution (green) with human teleoperation (blue) to complete the full task.</figcaption>
       </figure>
       <ul class="task-list">
-        <li><b>Cover Bread Rolls</b>Requires placing three breads on a plate and subsequently covering them with a cloth.<span class="instr">&ldquo;place the 3 breads on the plate and then cover the plate with the cloth&rdquo;</span><span class="phases"><span class="tag tamp">TAMP</span>&rarr;<span class="tag teleop">Teleop</span></span></li>
-        <li><b>Solve Constrained Puzzle</b>Requires removing an obstructing toy before solving a puzzle.<span class="instr">&ldquo;place the toy on the cloth and solve the puzzle&rdquo;</span><span class="phases"><span class="tag tamp">TAMP</span>&rarr;<span class="tag teleop">Teleop</span></span></li>
-        <li><b>Sort &amp; Cover Snacks</b>Requires semantic object sorting followed by covering the bread bowl with a cloth.<span class="instr">&ldquo;first, place the bread in the blue bowl. second, place the fruit in the green bowl and cover the blue bowl with the cloth&rdquo;</span><span class="phases"><span class="tag tamp">TAMP</span>&rarr;<span class="tag teleop">Teleop</span></span></li>
-        <li><b>Open Obstructed Book</b>Requires removing an obstruction before opening a book.<span class="instr">&ldquo;take the marker off the book and place it in the wooden tray, then open the book&rdquo;</span><span class="phases"><span class="tag tamp">TAMP</span>&rarr;<span class="tag teleop">Teleop</span></span></li>
-        <li><b>Store Bread in Closed Box</b>Requires moving the bread off the lid before opening the box and placing the bread inside.<span class="instr">&ldquo;place the bread on the plate, and then open the box and place the bread in the box&rdquo;</span><span class="phases"><span class="tag tamp">TAMP</span>&rarr;<span class="tag teleop">Teleop</span>&rarr;<span class="tag tamp">TAMP</span></span></li>
+        <li><b>Cover Bread Rolls</b>Place three breads on a plate, then cover them with a cloth.<span class="phases"><span class="tag tamp">TAMP</span>&rarr;<span class="tag teleop">Teleop</span></span></li>
+        <li><b>Solve Constrained Puzzle</b>Remove an obstructing toy, then solve the puzzle.<span class="phases"><span class="tag tamp">TAMP</span>&rarr;<span class="tag teleop">Teleop</span></span></li>
+        <li><b>Sort &amp; Cover Snacks</b>Sort snacks into bowls, then cover the bread bowl with a cloth.<span class="phases"><span class="tag tamp">TAMP</span>&rarr;<span class="tag teleop">Teleop</span></span></li>
+        <li><b>Open Obstructed Book</b>Remove a marker from a book, then open the book.<span class="phases"><span class="tag tamp">TAMP</span>&rarr;<span class="tag teleop">Teleop</span></span></li>
+        <li><b>Store Bread in Closed Box</b>Move the bread off the lid, open the box, then place the bread inside.<span class="phases"><span class="tag tamp">TAMP</span>&rarr;<span class="tag teleop">Teleop</span>&rarr;<span class="tag tamp">TAMP</span></span></li>
       </ul>
     </div>
 
     <!-- ---------- demonstrations ---------- -->
     <h3 class="sub" id="demos">Demonstrations collected by TANDEM</h3>
-    <p class="sec-sub">Each demonstration combines autonomous and teleoperated segments in execution order. The label in each video shows whether TAMP or the human teleoperator executes the current phase.</p>
+    <p class="sec-sub">The label in each video shows who executes the current phase: TAMP or a human.</p>
     <div class="vid-card">
       <div class="vid-grid cols-3">
         <figure class="vid"><video data-autoplay muted loop playsinline preload="none" width="640" height="360" poster="static/videos/collect-breads-cover.jpg" aria-label="TANDEM demonstration: Cover Bread Rolls"><source src="static/videos/collect-breads-cover.mp4" type="video/mp4" /></video><figcaption>Cover Bread Rolls</figcaption></figure>
@@ -161,7 +160,6 @@
         <figure class="vid"><video data-autoplay muted loop playsinline preload="none" width="640" height="360" poster="static/videos/collect-pen-book.jpg" aria-label="TANDEM demonstration: Open Obstructed Book"><source src="static/videos/collect-pen-book.mp4" type="video/mp4" /></video><figcaption>Open Obstructed Book</figcaption></figure>
         <figure class="vid"><video data-autoplay muted loop playsinline preload="none" width="640" height="360" poster="static/videos/collect-bread-box.jpg" aria-label="TANDEM demonstration: Store Bread in Closed Box"><source src="static/videos/collect-bread-box.mp4" type="video/mp4" /></video><figcaption>Store Bread in Closed Box</figcaption></figure>
       </div>
-      <p class="chart-note">Videos are sped up by the factor shown in each corner.</p>
     </div>
   </div>
 </section>
@@ -170,7 +168,7 @@
 <section id="results">
   <div class="wrap">
     <h2 class="sec">Results</h2>
-    <p class="sec-sub">For each task, we collect 20 successful TANDEM demonstrations and fine-tune a separate &pi;<sub>0.5</sub>-DROID on them, then run 20 evaluation trials per approach per task. HITL-TAMP is the closest prior approach: demonstrations of human-executed segments train a local diffusion policy, which is then combined with TAMP for execution.</p>
+    <p class="sec-sub">&pi;<sub>0.5</sub>-DROID fine-tuned on 20 TANDEM demonstrations per task, compared with the pretrained model and HITL-TAMP (20 trials each).</p>
 
     <div class="chart-card">
       <div class="chart-head">
@@ -200,20 +198,18 @@
             </tbody>
           </table>
         </div>
-        <p class="caption"><b>Success rate (Succ.) and task progress (Prog.) over 20 evaluation trials per task.</b> A rollout is a success when it meets every subgoal for its task, and its task progress is the fraction of subgoals met when the rollout terminates.</p>
+        <p class="caption">Success: every subgoal met. Progress: fraction of subgoals met.</p>
       </details>
     </div>
 
     <div class="findings">
-      <div class="finding"><b>The pretrained policy cannot perform these tasks.</b> &pi;<sub>0.5</sub>-DROID achieves 0% success across all five tasks, with task progress ranging from 30% to 41%.</div>
-      <div class="finding"><b>TANDEM demonstrations provide effective supervision.</b> After fine-tuning on TANDEM demonstrations, average task success increases to 60.0%. The demonstrations contain complete task trajectories, enabling a single VLA policy to learn the full task.</div>
-      <div class="finding"><b>TANDEM outperforms HITL-TAMP.</b> The policy trained with TANDEM demonstrations achieves an average success rate of 60.0%, compared with 17.0% for HITL-TAMP, and a higher success rate on each of the five tasks.</div>
-      <div class="finding"><b>No TAMP at inference time.</b> HITL-TAMP retains a slow TAMP planner and a learned policy as part of its test-time execution pipeline, whereas the TANDEM-trained VLA directly executes the task policy at 15&nbsp;Hz.</div>
+      <div class="finding"><b>60% average success.</b> Up from 0% for the pretrained model, and above HITL-TAMP (17%) on every task.</div>
+      <div class="finding"><b>No planner at inference.</b> The TANDEM-trained VLA runs at 15&nbsp;Hz; HITL-TAMP keeps a slow TAMP planner.</div>
     </div>
 
     <!-- ---------- rollouts ---------- -->
-    <h3 class="sub" id="rollouts">Policy rollouts after fine-tuning on TANDEM</h3>
-    <p class="sec-sub">We evaluate each task-specific policy on its corresponding task. The fine-tuned VLA executes the full task without requiring TAMP or human intervention.</p>
+    <h3 class="sub" id="rollouts">Fine-tuned policy rollouts</h3>
+    <p class="sec-sub">The fine-tuned VLA executes each full task on its own, without TAMP or a human.</p>
     <div class="vid-card">
       <div class="vid-grid cols-3">
         <figure class="vid"><video data-autoplay muted loop playsinline preload="none" width="640" height="360" poster="static/videos/rollout-breads-cover.jpg" aria-label="Fine-tuned policy rollout: Cover Bread Rolls"><source src="static/videos/rollout-breads-cover.mp4" type="video/mp4" /></video><figcaption>Cover Bread Rolls</figcaption></figure>
@@ -222,12 +218,11 @@
         <figure class="vid"><video data-autoplay muted loop playsinline preload="none" width="640" height="360" poster="static/videos/rollout-pen-book.jpg" aria-label="Fine-tuned policy rollout: Open Obstructed Book"><source src="static/videos/rollout-pen-book.mp4" type="video/mp4" /></video><figcaption>Open Obstructed Book</figcaption></figure>
         <figure class="vid"><video data-autoplay muted loop playsinline preload="none" width="640" height="360" poster="static/videos/rollout-bread-box.jpg" aria-label="Fine-tuned policy rollout: Store Bread in Closed Box"><source src="static/videos/rollout-bread-box.mp4" type="video/mp4" /></video><figcaption>Store Bread in Closed Box</figcaption></figure>
       </div>
-      <p class="chart-note">Videos are sped up by the factor shown in each corner.</p>
     </div>
 
     <!-- ---------- human effort ---------- -->
-    <h3 class="sub" id="effort">Human effort and demonstration efficiency</h3>
-    <p class="sec-sub">We compare TANDEM with full-task human teleoperation while matching the total human intervention time available to both methods on Cover Bread Rolls. Because TANDEM delegates routine pick-and-place stages to TAMP, the operator only controls the robot during the unsupported covering stage. In contrast, Human teleop (oracle) requires the operator to execute every stage of every demonstration.</p>
+    <h3 class="sub" id="effort">Human effort</h3>
+    <p class="sec-sub">On Cover Bread Rolls, TANDEM and full-task teleoperation get the same human time.</p>
 
     <div class="chart-card">
       <div class="chart-head">
@@ -242,41 +237,17 @@
       <p class="chart-note" id="note-scale"></p>
     </div>
 
-    <div class="findings">
-      <div class="finding"><b>Human effort goes where TAMP cannot.</b> The key advantage is not that TANDEM eliminates human effort, but that it concentrates human effort on the capabilities that TAMP cannot provide, allowing the same human-time budget to generate substantially more demonstrations.</div>
-      <div class="finding"><b>More demonstrations, better policies.</b> Success increases from 45% with 20 demonstrations to 75% with 40 and 80% with 60. With 80 demonstrations, success decreases slightly to 75%, suggesting that performance begins to saturate at approximately 60 demonstrations in this experiment.</div>
-    </div>
 
     <!-- ---------- domain extension / collection ---------- -->
-    <h3 class="sub" id="collection">Automatic extension of an incomplete TAMP domain</h3>
-    <p class="sec-sub">Raw TAMP cannot complete any of the five tasks because each contains at least one manipulation stage that lies outside the capabilities represented by its pick-and-place domain. TANDEM automatically identifies these unsupported stages, constructs the corresponding human-executed phases, and interleaves them with autonomous TAMP execution. Across the five tasks, TANDEM successfully collected 100 demonstrations from 130 execution attempts, a 76.9% demonstration collection success rate.</p>
+    <h3 class="sub" id="collection">Demonstration collection</h3>
+    <p class="sec-sub">Raw TAMP completes none of the five tasks. TANDEM collected 100 demonstrations from 130 attempts (76.9%).</p>
     <div class="chart-card">
       <div class="chart-head">
         <div class="chart-title">Demonstration collection attempts by outcome</div>
       </div>
       <div class="legend" id="legend-fail"></div>
       <div class="fail-chart" id="chart-fail"></div>
-      <p class="chart-note">The remaining failures are primarily caused by the underlying TAMP system rather than TANDEM's invention of predicates and magic operators. 93.3% of failed episodes are attributed to TAMP execution and none to TAMP planning or the human operator, while 6.7% stem from predicate/operator invention or phase switching, all of which occur on Store Bread in Closed Box.</p>
-      <details class="table-toggle">
-        <summary>Show full collection table</summary>
-        <div class="table-wrap">
-          <table class="res">
-            <thead>
-              <tr><th rowspan="2">Task</th><th colspan="2" class="grp">Collection success</th><th colspan="4" class="grp">TANDEM failure attribution</th></tr>
-              <tr><th class="grp">Raw TAMP</th><th>TANDEM</th><th class="grp">Invention</th><th>TAMP (planning)</th><th>TAMP (execution)</th><th>Human</th></tr>
-            </thead>
-            <tbody>
-              <tr><td>Cover Bread Rolls</td><td class="grp">0% (0/20)</td><td class="ours">64.5% (20/31)</td><td class="grp">0/11</td><td>0/11</td><td>11/11</td><td>0/11</td></tr>
-              <tr><td>Solve Constrained Puzzle</td><td class="grp">0% (0/20)</td><td class="ours">87.0% (20/23)</td><td class="grp">0/3</td><td>0/3</td><td>3/3</td><td>0/3</td></tr>
-              <tr><td>Sort &amp; Cover Snacks</td><td class="grp">0% (0/20)</td><td class="ours">90.9% (20/22)</td><td class="grp">0/2</td><td>0/2</td><td>2/2</td><td>0/2</td></tr>
-              <tr><td>Open Obstructed Book</td><td class="grp">0% (0/20)</td><td class="ours">80.0% (20/25)</td><td class="grp">0/5</td><td>0/5</td><td>5/5</td><td>0/5</td></tr>
-              <tr><td>Store Bread in Closed Box</td><td class="grp">0% (0/20)</td><td class="ours">69.0% (20/29)</td><td class="grp">2/9</td><td>0/9</td><td>7/9</td><td>0/9</td></tr>
-              <tr class="total"><td>Total</td><td class="grp">0% (0/100)</td><td class="ours">76.9% (100/130)</td><td class="grp">6.7% (2/30)</td><td>0% (0/30)</td><td>93.3% (28/30)</td><td>0% (0/30)</td></tr>
-            </tbody>
-          </table>
-        </div>
-        <p class="caption"><b>Demonstration collection success rates across the five long-horizon tasks.</b> We report successful demonstrations over total execution attempts, and attribute each failed TANDEM episode to one stage of the system: predicate and operator invention or phase switching, TAMP planning, TAMP execution, or the human operator.</p>
-      </details>
+      <p class="chart-note">93.3% of failures come from TAMP execution. The remaining 6.7% come from predicate/operator invention, all on Store Bread in Closed Box.</p>
     </div>
   </div>
 </section>

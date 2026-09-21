@@ -42,8 +42,8 @@
     sr:   { ours: [45, 75, 80, 75], human: [30, 30, 50, 65] }
   };
   var SCALE_NOTES = {
-    ep: 'TANDEM collects approximately 2.9× more demonstrations than full-task teleoperation at matched human-time budgets. For example, with 524 s of human intervention, TANDEM collects 40 demonstrations compared with 14 for oracle teleoperation; with 785 s, it collects 60 compared with 21.',
-    sr: 'Success of π0.5-DROID fine-tuned on the demonstrations collected at each budget. TANDEM achieves 45%, 75%, 80%, and 75% success across the four human-effort budgets, compared with 30%, 30%, 50%, and 65% for Human teleop (oracle).'
+    ep: 'About 2.9× more demonstrations than teleoperation for the same human time.',
+    sr: 'Policies fine-tuned on each budget’s demonstrations. TANDEM is higher at every budget.'
   };
 
   // Table I + Table III: collection attempts and failure attribution

@@ -113,7 +113,7 @@ h3.sub { font-family: var(--font-serif); font-size: 20px; font-weight: 600; marg
 figure { margin: 0; }
 .fig { margin: 0; }
 .fig img { width: 100%; height: auto; }
-.fig figcaption, .caption { color: var(--muted); font-size: 14px; line-height: 1.55; margin: 14px 0 0; text-align: left; }
+.fig figcaption, .caption { color: var(--muted); font-size: 14px; line-height: 1.55; margin: 14px 0 0; }
 .fig figcaption b, .caption b { color: var(--ink-2); font-weight: 600; }
 .teaser { margin: 44px 0 0; }
 .teaser video { width: 100%; height: auto; aspect-ratio: 962 / 270; background: var(--bg-soft); }
@@ -140,7 +140,6 @@ figure { margin: 0; }
 }
 .task-list li:last-child { border-bottom: 1px solid var(--line); }
 .task-list li b { display: block; color: var(--ink); font-size: 15px; font-weight: 600; margin-bottom: 2px; }
-.task-list .instr { display: block; color: var(--muted); font-size: 13.5px; font-style: italic; margin-top: 4px; }
 .task-list .phases { display: flex; flex-wrap: wrap; align-items: center; gap: 5px; margin-top: 8px; font-size: 11px; color: var(--muted); }
 .task-list .phases .tag { margin-left: 0; vertical-align: 0; }
 .tag {
@@ -262,6 +261,12 @@ table.res .grp { border-left: 1px solid var(--line); }
 footer { color: var(--muted); font-size: 13.5px; padding: 34px 0; border-top: 1px solid var(--line); }
 footer a { color: var(--muted); text-decoration: none; }
 footer a:hover { color: var(--ink); }
+
+/* ---------- justified body text ---------- */
+.prose p, .sec-sub, .fig figcaption, .caption, .chart-note, .pillar p, .finding, .task-list li { text-align: justify; }
+@media (max-width: 640px) {
+  .prose p, .sec-sub, .fig figcaption, .caption, .chart-note, .pillar p, .finding, .task-list li { hyphens: auto; -webkit-hyphens: auto; }
+}
 
 @media (max-width: 640px) { h1.title br { display: none; } }
 @media (max-width: 480px) {
